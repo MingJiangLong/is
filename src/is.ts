@@ -40,7 +40,7 @@ export function isBoolean(value: any): value is Boolean {
 }
 
 /**
- * 是否数组
+ * 数组判断
  * @param value 
  * @returns 
  */
@@ -49,7 +49,7 @@ export function isArray(value: any): value is any[] {
 }
 
 /**
- * 是否是键值对
+ * 键值对判断
  * @param value 
  * @returns 
  */
@@ -66,12 +66,29 @@ export function isSymbol(value: any): value is Symbol {
     return getTypeStr(value) === TYPES.Symbol
 }
 
+/**
+ * 函数判断
+ * @param value 
+ * @returns 
+ */
 export function isFunction(value: any): value is Function {
     return getTypeStr(value) === TYPES.Function
 }
+
+/**
+ * null 判断
+ * @param value 
+ * @returns 
+ */
 export function isNull(value: any): value is null {
     return value === null
 }
+
+/**
+ * undefined 判断
+ * @param value 
+ * @returns 
+ */
 export function isUndefined(value: any): value is undefined {
     return value === undefined
 }
@@ -85,13 +102,33 @@ export function isReference(value: any): value is (any[] | { [k: string]: any } 
     return isArray(value) || isKeyvalue(value) || isFunction(value)
 }
 
+/**
+ * 类数字判断  主要是数字和 字符串数字
+ * @param value 
+ * @returns 
+ */
 export function isNumberLike(value: any) {
     if (isNumber(value)) return true;
     if (isString(value) && !isNaN(+value)) return true
     return false;
 }
 
+/**
+ * 数组有item
+ * @param value 
+ * @returns 
+ */
+export function doesArrayHaveItems(value: any): value is [any, ...any[]] {
+    return isArray(value) && !!value.length;
+}
 
+/**
+ * 相等判断
+ * 主要是判断值相等但是引用不同的情况
+ * @param value1 
+ * @param value2 
+ * @returns 
+ */
 export function isEqual(value1: any, value2: any) {
 
     if (value1 === value2) return true;
