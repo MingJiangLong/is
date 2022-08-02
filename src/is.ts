@@ -113,14 +113,7 @@ export function isNumberLike(value: any) {
     return false;
 }
 
-/**
- * 数组有item
- * @param value 
- * @returns 
- */
-export function doesArrayHaveItems(value: any): value is [any, ...any[]] {
-    return isArray(value) && !!value.length;
-}
+
 
 /**
  * 相等判断
@@ -155,4 +148,19 @@ export function isEqual(value1: any, value2: any) {
         return true
     }
     return false;
+}
+
+/**
+ * 数组有item
+ * @param value 
+ * @returns 
+ */
+export function doesArrayHaveAnyItems(value: any): value is [any, ...any[]] {
+    return isArray(value) && !!value.length;
+}
+export function doesKeyvalueHaveAnyKeys(value: any, key: string) {
+    return isKeyvalue(value) && !!Object.keys(value).length;
+}
+export function isNullish(value: any): value is (null | undefined) {
+    return isNull(value) || isUndefined(value);
 }

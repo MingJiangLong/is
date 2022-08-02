@@ -276,3 +276,80 @@ test('isEqual', () => {
     }
 })
 
+test('doesArrayHaveAnyItems', () => {
+
+    const tempt = [
+        [1, false],
+        [-11, false],
+        ['2', false],
+        ['+2', false],
+        ['2.', false],
+        ['.2', false],
+        ['0.2', false],
+        [true, false],
+        [Symbol(1), false],
+        [void 0, false],
+        [null, false],
+        [function a() { }, false],
+        [[1], true],
+        [{}, false],
+        [[], false],
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.doesArrayHaveAnyItems(value)).toBe(result)
+    }
+})
+test('doesKeyvalueHaveAnyKeys', () => {
+
+    const tempt = [
+        [1, false],
+        [-11, false],
+        ['2', false],
+        ['+2', false],
+        ['2.', false],
+        ['.2', false],
+        ['0.2', false],
+        [true, false],
+        [Symbol(1), false],
+        [void 0, false],
+        [null, false],
+        [function a() { }, false],
+        [[1], false],
+        [{}, false],
+        [{ name: 1 }, true],
+        [[], false],
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.doesKeyvalueHaveAnyKeys(value)).toBe(result)
+    }
+})
+test('isNullish', () => {
+
+    const tempt = [
+        [1, false],
+        [-11, false],
+        ['2', false],
+        ['+2', false],
+        ['2.', false],
+        ['.2', false],
+        ['0.2', false],
+        [true, false],
+        [Symbol(1), false],
+        [void 0, true],
+        [null, true],
+        [function a() { }, false],
+        [[1], false],
+        [{}, false],
+        [{ name: 1 }, false],
+        [[], false],
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.isNullish(value)).toBe(result)
+    }
+})
