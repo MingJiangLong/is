@@ -1,10 +1,11 @@
 {
   "name": "@longjiang/is",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "js 类型判断",
   "main": "./dist/is.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "push": "node ./publishScript.js"
   },
   "author": "longjiang",
   "license": "ISC",
