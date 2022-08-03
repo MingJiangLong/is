@@ -1,31 +1,117 @@
 const versionInfo = require('./package.json');
 const fs = require("fs");
 const { stdout, stderr } = require('process');
+const path = require("path");
 const spawn = require("child_process").spawn;
-let [mainVersion, subVersion, tinyVersion] = versionInfo.version.split(".")
-versionInfo.version = `${mainVersion}.${subVersion}.${+tinyVersion + 1}`
-fs.writeFileSync("package.json", JSON.stringify(versionInfo));
+const spawnSync = require("child_process").spawnSync;
 
-let process = spawn(
-    "npm",
-    ["publish"],
-    {
-        cwd: __dirname
-    },
-)
 
-process.stdout.on('data', (data) => {
-    if (!data) {
-        console.log(`is发布失败版本${+tinyVersion + 1}失败!`)
-    } else {
-        console.log(`is发布成功,当前版本为${mainVersion}.${subVersion}.${+tinyVersion + 1} `)
+// 删除dist文件夹
+// 重新编译ts文件
+// 修改版本
+// 发布
+
+/**
+ * 移除编译文件夹
+ * @param {*} distPath 
+ * @returns 
+ */
+function removeFolder(distPath = path.join(__dirname, './dist')) {
+    if (!fs.existsSync(distPath)) return;
+    let files = fs.readdirSync(distPath);
+    files.forEach((filePath, index) => {
+        let currentPath = path.join(distPath, filePath);
+        if (fs.statSync(currentPath).isDirectory()) {
+            removeFolder(currentPath)
+        } else {
+            fs.unlinkSync(currentPath)
+        }
+    })
+    fs.rmdirSync(distPath)
+}
+
+/**
+ * 编译ts文件
+ * @returns 
+ */
+function compileTs() {
+
+    return new Promise((resolve, reject) => {
+        let process = spawn('cmd', ['/c', 'tsc'], {
+            cwd: __dirname
+        });
+        process.on("error", error => {
+            console.log("编译失败!")
+            reject(error)
+        })
+
+        process.on("exit", code => {
+            if (!code) {
+                console.log("编译成功!")
+                resolve()
+            } else {
+                console.log("编译失败!")
+                reject();
+            }
+        })
+    })
+
+}
+
+/**
+ * 构建新的版本信息
+ * @returns 
+ */
+function getNewVersionInfo() {
+    let newVersion = { ...versionInfo };
+    let [mainVersion, subVersion, tinyVersion] = newVersion.version.split(".")
+    newVersion.version = `${mainVersion}.${subVersion}.${+tinyVersion + 1}`
+    return newVersion;
+}
+
+/**
+ * 将版本信息写入package.json
+ */
+function writeVersion2File(info) {
+    fs.writeFileSync("package.json", JSON.stringify(info));
+}
+
+function npmPublish() {
+    return new Promise((resolve, reject) => {
+        let process = spawn(
+            "cmd",
+            ["/c", "npm", "publish"],
+            {
+                cwd: __dirname
+            },
+        )
+        process.on("error", error => {
+            reject(error)
+        })
+
+        process.on("exit", (code, signal) => {
+            if (!code) {
+                console.log("发布新版本成功")
+                resolve()
+            } else {
+                reject(code);
+            }
+        })
+    })
+}
+
+async function publish() {
+    removeFolder()
+    await compileTs()
+    let newVersion = getNewVersionInfo();
+    writeVersion2File(newVersion);
+
+    try {
+        await npmPublish()
+    } catch (error) {
+        writeVersion2File(versionInfo)
+        throw error
     }
-});
+}
 
-process.on('close', (data) => {
-    if (data) {
-        console.log(data)
-    } else {
-        console.log(data)
-    }
-});
+publish();
