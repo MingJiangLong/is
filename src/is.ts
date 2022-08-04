@@ -185,8 +185,10 @@ export function doesKeyvalueHasAnyKeys(value: any) {
  * @returns 
  */
 export function isKeyInKeyvalue(value: Keyvalue, key: string) {
-    return (isFunction(value.hasOwnProperty) && value.hasOwnProperty(key));
+    return (isFunction(value.hasOwnProperty) && value.hasOwnProperty(key)) ||
+        (isKeyvalue(value) && key in value);
 }
+
 /**
  * null / undefined
  * @param value 
@@ -195,3 +197,4 @@ export function isKeyInKeyvalue(value: Keyvalue, key: string) {
 export function isNullish(value: any): value is (null | undefined) {
     return isNull(value) || isUndefined(value);
 }
+
