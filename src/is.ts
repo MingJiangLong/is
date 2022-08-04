@@ -64,7 +64,7 @@ export function isArray(value: any): value is any[] {
  * @param value 
  * @returns 
  */
-export function isKeyvalue(value: any): value is { [k: string]: any } {
+export function isKeyvalue(value: any): value is Keyvalue {
     return getTypeStr(value) === TYPES.Object
 }
 
@@ -109,7 +109,7 @@ export function isUndefined(value: any): value is undefined {
  * @param value 
  * @returns 
  */
-export function isReference(value: any): value is (any[] | { [k: string]: any } | Function) {
+export function isReference(value: any): value is (any[] | Keyvalue | Function) {
     return isArray(value) || isKeyvalue(value) || isFunction(value)
 }
 
@@ -196,5 +196,43 @@ export function isKeyInKeyvalue(value: Keyvalue, key: string) {
  */
 export function isNullish(value: any): value is (null | undefined) {
     return isNull(value) || isUndefined(value);
+}
+
+/**
+ * 整数
+ * @param value 
+ * @returns 
+ */
+export function isInteger(value: any) {
+    if (!isNumber(value)) return false;
+    return Number.isInteger(value)
+}
+
+/**
+ * 整数
+ * @param value 
+ * @returns 
+ */
+export function isIntegerLike(value: any) {
+    if (!isNumberLike(value)) return false;
+    return Number.isInteger(+value)
+}
+/**
+ * 浮点数
+ * @param value 
+ * @returns 
+ */
+export function isFloat(value: any) {
+    if (!isNumber(value)) return false;
+    return `${Number(value)}`.indexOf('.') !== -1
+}
+/**
+ * 浮点数
+ * @param value 
+ * @returns 
+ */
+export function isFloatLike(value: any) {
+    if (!isNumberLike(value)) return false;
+    return `${Number(value)}`.indexOf('.') !== -1
 }
 

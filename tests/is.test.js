@@ -366,3 +366,81 @@ test('isKeyInKeyvalue', () => {
         expect(is.isKeyInKeyvalue(value, value2)).toBe(result)
     }
 })
+test('isInteger', () => {
+    const tempt = [
+        [{ name: "longjiang" }, false],
+        [1, true],
+        ['1', false],
+        [true, false],
+        [null, false],
+        [undefined, false],
+        [Symbol(1), false],
+        [1.1, false],
+        [NaN, false],
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.isInteger(value)).toBe(result)
+    }
+})
+test('isIntegerLike', () => {
+    const tempt = [
+        [{ name: "longjiang" }, false],
+        [1, true],
+        ['1', true],
+        [true, false],
+        [null, false],
+        [undefined, false],
+        [Symbol(1), false],
+        [1.1, false],
+        [NaN, false],
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.isIntegerLike(value)).toBe(result)
+    }
+})
+test('isFloat', () => {
+    const tempt = [
+        [{ name: "longjiang" }, false],
+        [1, false],
+        ['1', false],
+        [true, false],
+        [null, false],
+        [undefined, false],
+        [Symbol(1), false],
+        [1.1, true],
+        ["1.1", false],
+        [NaN, false],
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.isFloat(value)).toBe(result)
+    }
+})
+test('isFloatLike', () => {
+    const tempt = [
+        [{ name: "longjiang" }, false],
+        [1, false],
+        ['1', false],
+        [true, false],
+        [null, false],
+        [undefined, false],
+        [Symbol(1), false],
+        [1.1, true],
+        ["1.1", true],
+        [NaN, false],
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.isFloatLike(value)).toBe(result)
+    }
+})
