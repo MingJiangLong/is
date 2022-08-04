@@ -8,21 +8,32 @@ export enum TYPES {
     Symbol = '[object Symbol]',
     Function = '[object Function]'
 }
+
+export type Keyvalue = { [k: string]: any }
+export type ArrayItem<S> = S extends Array<infer E> ? E : any
+
+/**
+ * 类型
+ * Object.prototype.toString.call
+ * @param value 
+ * @returns 
+ */
 export function getTypeStr(value: any) {
     return Object.prototype.toString.call(value)
 }
 
 /**
- * 是否是数字
+ * 数字 
+ * 排除NaN
  * @param value 
  * @returns 
  */
 export function isNumber(value: any): value is Number {
-    return getTypeStr(value) === TYPES.Number
+    return getTypeStr(value) === TYPES.Number && !isNaN(+value)
 }
 
 /**
- * 是否是字符串
+ * 字符串
  * @param value 
  * @returns 
  */
@@ -31,7 +42,7 @@ export function isString(value: any): value is String {
 }
 
 /**
- * 是否是布尔
+ * 布尔
  * @param value 
  * @returns 
  */
@@ -40,7 +51,7 @@ export function isBoolean(value: any): value is Boolean {
 }
 
 /**
- * 数组判断
+ * 数组
  * @param value 
  * @returns 
  */
@@ -49,7 +60,7 @@ export function isArray(value: any): value is any[] {
 }
 
 /**
- * 键值对判断
+ * 键值对
  * @param value 
  * @returns 
  */
@@ -58,7 +69,7 @@ export function isKeyvalue(value: any): value is { [k: string]: any } {
 }
 
 /**
- * 是否是symbol
+ * symbol
  * @param value 
  * @returns 
  */
@@ -67,7 +78,7 @@ export function isSymbol(value: any): value is Symbol {
 }
 
 /**
- * 函数判断
+ * 函数
  * @param value 
  * @returns 
  */
@@ -76,7 +87,7 @@ export function isFunction(value: any): value is Function {
 }
 
 /**
- * null 判断
+ * null
  * @param value 
  * @returns 
  */
@@ -85,7 +96,7 @@ export function isNull(value: any): value is null {
 }
 
 /**
- * undefined 判断
+ * undefined 
  * @param value 
  * @returns 
  */
@@ -94,7 +105,7 @@ export function isUndefined(value: any): value is undefined {
 }
 
 /**
- * 是否是引用类型
+ * 引用类型
  * @param value 
  * @returns 
  */
@@ -103,7 +114,8 @@ export function isReference(value: any): value is (any[] | { [k: string]: any } 
 }
 
 /**
- * 类数字判断  主要是数字和 字符串数字
+ * 类数字判断  
+ * '1' / 1
  * @param value 
  * @returns 
  */
@@ -112,8 +124,6 @@ export function isNumberLike(value: any) {
     if (isString(value) && !isNaN(+value)) return true
     return false;
 }
-
-
 
 /**
  * 相等判断
@@ -155,12 +165,33 @@ export function isEqual(value1: any, value2: any) {
  * @param value 
  * @returns 
  */
-export function doesArrayHaveAnyItems(value: any): value is [any, ...any[]] {
+export function doesArrayHasAnyItems(value: any): value is [any, ...any[]] {
     return isArray(value) && !!value.length;
 }
-export function doesKeyvalueHaveAnyKeys(value: any, key: string) {
+
+/**
+ * Keyvalue 是否有键
+ * @param value 
+ * @returns 
+ */
+export function doesKeyvalueHasAnyKeys(value: any) {
     return isKeyvalue(value) && !!Object.keys(value).length;
 }
+
+/**
+ * key in keyvalue
+ * @param value 
+ * @param key 
+ * @returns 
+ */
+export function isKeyInKeyvalue(value: Keyvalue, key: string) {
+    return (isFunction(value.hasOwnProperty) && value.hasOwnProperty(key));
+}
+/**
+ * null / undefined
+ * @param value 
+ * @returns 
+ */
 export function isNullish(value: any): value is (null | undefined) {
     return isNull(value) || isUndefined(value);
 }

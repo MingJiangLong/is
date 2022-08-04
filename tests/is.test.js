@@ -276,7 +276,7 @@ test('isEqual', () => {
     }
 })
 
-test('doesArrayHaveAnyItems', () => {
+test('doesArrayHasAnyItems', () => {
 
     const tempt = [
         [1, false],
@@ -298,10 +298,10 @@ test('doesArrayHaveAnyItems', () => {
 
     for (let i = 0; i < tempt.length; i++) {
         let [value, result] = tempt[i]
-        expect(is.doesArrayHaveAnyItems(value)).toBe(result)
+        expect(is.doesArrayHasAnyItems(value)).toBe(result)
     }
 })
-test('doesKeyvalueHaveAnyKeys', () => {
+test('doesKeyvalueHasAnyKeys', () => {
 
     const tempt = [
         [1, false],
@@ -324,7 +324,7 @@ test('doesKeyvalueHaveAnyKeys', () => {
 
     for (let i = 0; i < tempt.length; i++) {
         let [value, result] = tempt[i]
-        expect(is.doesKeyvalueHaveAnyKeys(value)).toBe(result)
+        expect(is.doesKeyvalueHasAnyKeys(value)).toBe(result)
     }
 })
 test('isNullish', () => {
@@ -351,5 +351,18 @@ test('isNullish', () => {
     for (let i = 0; i < tempt.length; i++) {
         let [value, result] = tempt[i]
         expect(is.isNullish(value)).toBe(result)
+    }
+})
+test('isKeyInKeyvalue', () => {
+    const tempt = [
+        [{ name: "longjiang" }, "longjiang", false],
+        [{ name: "longjiang" }, 2, false],
+        [{ name: "longjiang" }, "name", true],
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, value2, result] = tempt[i]
+        expect(is.isKeyInKeyvalue(value, value2)).toBe(result)
     }
 })
