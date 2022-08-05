@@ -263,6 +263,7 @@ export function isIntegerLike(value: any) {
     if (!isNumberLike(value)) return false;
     return Number.isInteger(+value)
 }
+
 /**
  * 浮点数
  * @param value 
@@ -272,6 +273,7 @@ export function isFloat(value: any) {
     if (!isNumber(value)) return false;
     return `${Number(value)}`.indexOf('.') !== -1
 }
+
 /**
  * 类浮点数
  * @param value 
@@ -281,4 +283,3 @@ export function isFloatLike(value: any) {
     if (!isNumberLike(value)) return false;
     return `${Number(value)}`.indexOf('.') !== -1
 }
-

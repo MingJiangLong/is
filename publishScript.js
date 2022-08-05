@@ -78,25 +78,37 @@ function writeVersion2File(info) {
 
 function npmPublish() {
     return new Promise((resolve, reject) => {
+
         let process = spawn(
             "cmd",
-            ["/c", "npm", "publish"],
+            ["/c", "npm publish"],
             {
                 cwd: __dirname
             },
         )
-        process.on("error", error => {
-            reject(error)
-        })
 
-        process.on("exit", (code, signal) => {
-            if (!code) {
-                console.log("发布新版本成功")
-                resolve()
+        //输出正常情况下的控制台信息
+        process.stdout.on("data", function (data) {
+            console.log(data);
+        });
+
+        //输出报错信息
+        process.stderr.on("data", function (data) {
+            console.log("stderr: " + data);
+        });
+
+        //当程序执行完毕后的回调，那个code一般是0
+        process.on("exit", function (code) {
+            if (code) {
+                reject()
             } else {
-                reject(code);
+                resolve()
             }
         })
+
+
+    }).catch(e => {
+        console.log(e)
     })
 }
 
@@ -106,12 +118,12 @@ async function publish() {
     let newVersion = getNewVersionInfo();
     writeVersion2File(newVersion);
 
-    try {
-        await npmPublish()
-    } catch (error) {
-        writeVersion2File(versionInfo)
-        throw error
-    }
+    // try {
+    //     await npmPublish()
+    // } catch (error) {
+    //     writeVersion2File(versionInfo)
+    //     throw error
+    // }
 }
 
 publish();
