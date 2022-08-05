@@ -266,6 +266,61 @@ test('isEqual', () => {
             [{ name2: 'jiang', name: "long", friends: [1, 2, { name: "adorn" }] }],
             true
         ],
+        [
+            new Set([1, 2]),
+            [{ name2: 'jiang', name: "long", friends: [1, 2, { name: "adorn" }] }],
+            false
+        ],
+        [
+            new Set([1, 2]),
+            new Set([2, 1]),
+            false
+        ],
+        [
+            new Set([1, 2]),
+            new Set([1, 2]),
+            true
+        ],
+        [
+            new Set('abc'),
+            new Set('abc'),
+            true
+        ],
+        [
+            new Set().add({ name: "longjiang" }),
+            new Set().add({ name: "longjiang" }),
+            true
+        ],
+        [
+            new Map().set({ name: "longjiang" }),
+            new Set().add({ name: "longjiang" }),
+            false
+        ],
+        [
+            new Map().set({ name: "longjiang" }, 2),
+            new Map().set({ name: "longjiang" }, 2),
+            true
+        ],
+        [
+            new Map().set({ name: "longjiang" }, 2),
+            new Map().set({ name: "longjiang" }, 1),
+            false
+        ],
+        [
+            new Map().set(new Set().add('abc'), 2),
+            new Map().set(new Set().add('abc'), 2),
+            true
+        ],
+        [
+            new Map().set(NaN, 2),
+            new Map().set(NaN, 2),
+            true
+        ],
+        [
+            new Map().set(NaN, 2),
+            new Map().set(NaN, NaN),
+            false
+        ],
 
     ]
 

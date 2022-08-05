@@ -6,7 +6,9 @@ export enum TYPES {
     Array = '[object Array]',
     Object = '[object Object]',
     Symbol = '[object Symbol]',
-    Function = '[object Function]'
+    Function = '[object Function]',
+    Set = '[object Set]',
+    Map = '[object Map]'
 }
 
 export type Keyvalue = { [k: string]: any }
@@ -60,6 +62,23 @@ export function isArray(value: any): value is any[] {
 }
 
 /**
+ * Set
+ * @param value 
+ * @returns 
+ */
+export function isSet(value: any): value is Set<any> {
+    return getTypeStr(value) === TYPES.Set
+}
+
+/**
+ * Map
+ * @param value 
+ * @returns 
+ */
+export function isMap(value: any): value is Map<any, any> {
+    return getTypeStr(value) === TYPES.Map
+}
+/**
  * 键值对
  * @param value 
  * @returns 
@@ -110,7 +129,7 @@ export function isUndefined(value: any): value is undefined {
  * @returns 
  */
 export function isReference(value: any): value is (any[] | Keyvalue | Function) {
-    return isArray(value) || isKeyvalue(value) || isFunction(value)
+    return isArray(value) || isKeyvalue(value) || isFunction(value) || isSet(value) || isMap(value)
 }
 
 /**
@@ -125,17 +144,25 @@ export function isNumberLike(value: any) {
     return false;
 }
 
+export function isJustNaN(value: any) {
+    return getTypeStr(value) === TYPES.Number && !isNumber(value)
+}
+
 /**
  * 相等判断
- * 主要是判断值相等但是引用不同的情况
+ * NaN比较  相等
+ * Symbol 或者Function 被转化成字符串之后相等 判断为相等
+ * 特殊 Map键变化会被认为不等 
+ * 
  * @param value1 
  * @param value2 
  * @returns 
  */
-export function isEqual(value1: any, value2: any) {
+export function isEqual(value1: any, value2: any): boolean {
 
     if (value1 === value2) return true;
     if (getTypeStr(value1) !== getTypeStr(value2)) return false;
+    if (isJustNaN(value1)) return true;
     if (isSymbol(value1) || isFunction(value1)) return value1.toString() === value2.toString();
     if (isArray(value1)) {
         if (value1.length !== value2.length) return false;
@@ -155,6 +182,25 @@ export function isEqual(value1: any, value2: any) {
             if (!isEqual(value1[keys[i]], value2[keys[i]])) return false
         }
 
+        return true
+    }
+    if (isSet(value1)) {
+        if (value1.size !== value2.size) return false;
+        let v1 = Array.from(value1);
+        let v2 = Array.from(value2);
+        return isEqual(v1, v2);
+    }
+
+    if (isMap(value1)) {
+        // Map的key是有序的 Map乱序也会被认为false
+        if (value1.size !== value2.size) return false;
+        let v1 = Array.from(value1);
+        let v2: [any, any][] = Array.from(value2);
+        for (let i = 0; i < v1.length; i++) {
+            let [keyOfFirst, valueOfFirst] = v1[i];
+            let [keyOfSecond, valueOfSecond] = v2[i];
+            if (!isEqual(keyOfFirst, keyOfSecond) || !isEqual(valueOfFirst, valueOfSecond)) return false
+        }
         return true
     }
     return false;
@@ -209,7 +255,7 @@ export function isInteger(value: any) {
 }
 
 /**
- * 整数
+ * 类整数
  * @param value 
  * @returns 
  */
@@ -227,7 +273,7 @@ export function isFloat(value: any) {
     return `${Number(value)}`.indexOf('.') !== -1
 }
 /**
- * 浮点数
+ * 类浮点数
  * @param value 
  * @returns 
  */
