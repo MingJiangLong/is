@@ -154,6 +154,7 @@ export function isJustNaN(value: any) {
  * Symbol 或者Function 被转化成字符串之后相等 判断为相等
  * 特殊 Map键变化会被认为不等 
  * 
+ * 其余类型未做判断会自己默认false
  * @param value1 
  * @param value2 
  * @returns 
@@ -282,4 +283,44 @@ export function isFloat(value: any) {
 export function isFloatLike(value: any) {
     if (!isNumberLike(value)) return false;
     return `${Number(value)}`.indexOf('.') !== -1
+}
+
+/**
+ * 大于
+ * @param first 
+ * @param second 
+ * @returns 
+ */
+export function isGreaterThan(first: number, second: number) {
+    return +first > +second
+}
+
+/**
+ * 大于等于
+ * @param first 
+ * @param second 
+ * @returns 
+ */
+export function isGEThan(first: number, second: number) {
+    return +first >= +second;
+}
+
+/**
+ * 小于
+ * @param first 
+ * @param second 
+ * @returns 
+ */
+export function isLessThan(first: number, second: number) {
+    return +first < +second;
+}
+
+/**
+ * 小于等于
+ * @param first 
+ * @param second 
+ * @returns 
+ */
+export function isLEThan(first: number, second: number) {
+    return +first <= +second;
 }
