@@ -11,7 +11,7 @@ export enum TYPES {
     Map = '[object Map]'
 }
 
-export type Keyvalue = { [k: string]: any }
+export type Keyvalue<T = any> = { [k: string]: T }
 export type ArrayItem<S> = S extends Array<infer E> ? E : any
 
 /**
