@@ -1,6 +1,7 @@
 const is = require('../dist/is')
 test('isString', () => {
     const tempt = [
+        [' ', true],
         ['2', true],
         [1, false],
         [true, false],
@@ -15,11 +16,12 @@ test('isString', () => {
     for (let i = 0; i < tempt.length; i++) {
         let [value, result] = tempt[i]
         expect(is.isString(value)).toBe(result)
-
     }
 })
 test('isNumber', () => {
     const tempt = [
+        ['', false],
+        [' ', false],
         [1, true],
         ['2', false],
         [true, false],
@@ -29,17 +31,18 @@ test('isNumber', () => {
         [null, false],
         [Symbol(1), false],
         [function a() { }, false],
+        [NaN, false],
     ]
 
     for (let i = 0; i < tempt.length; i++) {
         let [value, result] = tempt[i]
         expect(is.isNumber(value)).toBe(result)
-
     }
 })
 test('isBoolean', () => {
     const tempt = [
         [1, false],
+        [' ', false],
         ['2', false],
         [true, true],
         [[1], false],
@@ -101,8 +104,11 @@ test('isArray', () => {
         [null, false],
         [1, false],
         ['2', false],
+        ['  ', false],
         [true, false],
+        // [#00ffff, false],
         [{}, false],
+        [class a { }, false],
         [Symbol(1), false],
         [function a() { }, false],
     ]
@@ -171,8 +177,9 @@ test('isFunction', () => {
     }
 })
 
-test('isNumberLike', () => {
+test('likeNumber', () => {
     const tempt = [
+        ['', false],
         [1, true],
         [-11, true],
         ['2', true],
@@ -191,8 +198,7 @@ test('isNumberLike', () => {
 
     for (let i = 0; i < tempt.length; i++) {
         let [value, result] = tempt[i]
-        expect(is.isNumberLike(value)).toBe(result)
-
+        expect(is.lookLikeNumber(value)).toBe(result)
     }
 })
 
@@ -432,6 +438,7 @@ test('isInteger', () => {
         [Symbol(1), false],
         [1.1, false],
         [NaN, false],
+        [Math.pow(2.1, 10), false],
 
     ]
 
@@ -440,7 +447,7 @@ test('isInteger', () => {
         expect(is.isInteger(value)).toBe(result)
     }
 })
-test('isIntegerLike', () => {
+test('likeInteger', () => {
     const tempt = [
         [{ name: "longjiang" }, false],
         [1, true],
@@ -456,7 +463,7 @@ test('isIntegerLike', () => {
 
     for (let i = 0; i < tempt.length; i++) {
         let [value, result] = tempt[i]
-        expect(is.isIntegerLike(value)).toBe(result)
+        expect(is.lookLikeInteger(value)).toBe(result)
     }
 })
 test('isFloat', () => {
@@ -471,6 +478,9 @@ test('isFloat', () => {
         [1.1, true],
         ["1.1", false],
         [NaN, false],
+        [1.0, false],
+        [NaN, false],
+        [Math.pow(2.1, 10), true],
 
     ]
 
@@ -479,7 +489,7 @@ test('isFloat', () => {
         expect(is.isFloat(value)).toBe(result)
     }
 })
-test('isFloatLike', () => {
+test('likeFloat', () => {
     const tempt = [
         [{ name: "longjiang" }, false],
         [1, false],
@@ -489,6 +499,8 @@ test('isFloatLike', () => {
         [undefined, false],
         [Symbol(1), false],
         [1.1, true],
+        [1.0, false],
+        [1, false],
         ["1.1", true],
         [NaN, false],
 
@@ -496,6 +508,120 @@ test('isFloatLike', () => {
 
     for (let i = 0; i < tempt.length; i++) {
         let [value, result] = tempt[i]
-        expect(is.isFloatLike(value)).toBe(result)
+        expect(is.lookLikeFloat(value)).toBe(result)
+    }
+})
+test('likeNegativeInteger', () => {
+    const tempt = [
+        [{ name: "longjiang" }, false],
+        [1, false],
+        ['1', false],
+        [true, false],
+        [null, false],
+        [undefined, false],
+        [Symbol(1), false],
+        [1.1, false],
+        [1.0, false],
+        [1, false],
+        ["1.1", false],
+        [NaN, false],
+        [-1, true],
+        ["-1", true],
+        ["-1.0", true],
+        ["-1.2", false],
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.lookLikeNegativeInteger(value)).toBe(result)
+    }
+})
+test('likePositiveInteger', () => {
+    const tempt = [
+        [{ name: "longjiang" }, false],
+        [1, true],
+        ['1', true],
+        [true, false],
+        [null, false],
+        [undefined, false],
+        [Symbol(1), false],
+        [1.1, false],
+        [1.0, true],
+        [1, true],
+        ["1.1", false],
+        [NaN, false],
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.lookLikePositiveInteger(value)).toBe(result)
+    }
+})
+test('likePositiveFloat', () => {
+    const tempt = [
+        [{ name: "longjiang" }, false],
+        [1, false],
+        ['1', false],
+        [true, false],
+        [null, false],
+        [undefined, false],
+        [Symbol(1), false],
+        [1.1, true],
+        [1.0, false],
+        [1, false],
+        ["1.1", true],
+        [NaN, false],
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.lookLikePositiveFloat(value)).toBe(result)
+    }
+})
+test('likeNegativeFloat', () => {
+    const tempt = [
+        [{ name: "longjiang" }, false],
+        [1, false],
+        ['1', false],
+        [true, false],
+        [null, false],
+        [undefined, false],
+        [Symbol(1), false],
+        [1.1, false],
+        [1.0, false],
+        [1, false],
+        ["1.1", false],
+        [NaN, false],
+        ["-1", false],
+        ["-1.0", false],
+        ["-1.2", true],
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, result] = tempt[i]
+        expect(is.lookLikeNegativeFloat(value)).toBe(result)
+    }
+})
+test('likeGThan', () => {
+    const tempt = [
+        [1, 2, false],
+        [1, -1, true],
+        [1, '', false],
+        [1, '1', false],
+        [1, '-1', true],
+        [1, 'a', false],
+        ['1', '2', false],
+        ['1.0', 0.2, true],
+
+
+    ]
+
+    for (let i = 0; i < tempt.length; i++) {
+        let [value, value2, result] = tempt[i]
+        expect(is.lookLikeGreaterThan(value, value2)).toBe(result)
     }
 })

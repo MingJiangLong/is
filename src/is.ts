@@ -31,7 +31,59 @@ export function getTypeStr(value: any) {
  * @returns 
  */
 export function isNumber(value: any): value is Number {
-    return getTypeStr(value) === TYPES.Number && !isNaN(+value)
+    return (typeof value === 'number' || getTypeStr(value) === TYPES.Number) && !isNaN(+value)
+}
+
+/**
+ * 整数判断
+ * @param value 
+ * @returns 
+ */
+export function isInteger(value: any) {
+    return isNumber(value) && Number.isInteger(value)
+}
+
+/**
+ * 浮点数
+ * @param value 
+ * @returns 
+ */
+export function isFloat(value: any) {
+    return isNumber(value) && !Number.isInteger(value)
+}
+
+/**
+ * 正整数判断
+ */
+export function isPositiveInteger(value: any) {
+    return isNumber(value) && isInteger(value) && value > 0
+}
+
+/**
+ * 负整数
+ * @param value 
+ * @returns 
+ */
+export function isNegativeInteger(value: any) {
+    return isNumber(value) && isInteger(value) && value < 0
+}
+
+/**
+ * 
+ * @param value 正浮点数
+ * @returns 
+ */
+export function isPositiveFloat(value: any) {
+    return isFloat(value) && value > 0
+}
+
+/**
+ * 负浮点数
+ * @param value 
+ * @returns 
+ */
+export function isNegativeFloat(value: any) {
+    return isFloat(value) && value < 0
 }
 
 /**
@@ -40,7 +92,7 @@ export function isNumber(value: any): value is Number {
  * @returns 
  */
 export function isString(value: any): value is String {
-    return getTypeStr(value) === TYPES.String
+    return typeof value === 'string' || getTypeStr(value) === TYPES.String
 }
 
 /**
@@ -49,7 +101,7 @@ export function isString(value: any): value is String {
  * @returns 
  */
 export function isBoolean(value: any): value is Boolean {
-    return getTypeStr(value) === TYPES.Boolean
+    return typeof value === 'boolean' || getTypeStr(value) === TYPES.Boolean
 }
 
 /**
@@ -58,7 +110,7 @@ export function isBoolean(value: any): value is Boolean {
  * @returns 
  */
 export function isArray(value: any): value is any[] {
-    return getTypeStr(value) === TYPES.Array
+    return Array.isArray(value) || value instanceof Array || getTypeStr(value) === TYPES.Array
 }
 
 /**
@@ -67,7 +119,7 @@ export function isArray(value: any): value is any[] {
  * @returns 
  */
 export function isSet(value: any): value is Set<any> {
-    return getTypeStr(value) === TYPES.Set
+    return value instanceof Set || getTypeStr(value) === TYPES.Set
 }
 
 /**
@@ -76,7 +128,7 @@ export function isSet(value: any): value is Set<any> {
  * @returns 
  */
 export function isMap(value: any): value is Map<any, any> {
-    return getTypeStr(value) === TYPES.Map
+    return value instanceof Map || getTypeStr(value) === TYPES.Map
 }
 /**
  * 键值对
@@ -133,16 +185,25 @@ export function isReference(value: any): value is (any[] | Keyvalue | Function) 
 }
 
 /**
- * 类数字判断  
- * '1' / 1
+ * key in keyvalue
+ * @param value 
+ * @param key 
+ * @returns 
+ */
+export function isKeyInKeyvalue(value: Keyvalue, key: string) {
+    return (isFunction(value.hasOwnProperty) && value.hasOwnProperty(key)) ||
+        (isKeyvalue(value) && key in value);
+}
+
+/**
+ * null / undefined
  * @param value 
  * @returns 
  */
-export function isNumberLike(value: any) {
-    if (isNumber(value)) return true;
-    if (isString(value) && !isNaN(+value)) return true
-    return false;
+export function isNullish(value: any): value is (null | undefined) {
+    return isNull(value) || isUndefined(value);
 }
+
 
 export function isJustNaN(value: any) {
     return getTypeStr(value) === TYPES.Number && !isNumber(value)
@@ -212,7 +273,7 @@ export function isEqual(value1: any, value2: any): boolean {
  * @param value 
  * @returns 
  */
-export function doesArrayHasAnyItems(value: any): value is [any, ...any[]] {
+export function doesArrayHasAnyItems<T = any>(value: T[]): value is [T, ...T[]] {
     return isArray(value) && !!value.length;
 }
 
@@ -226,53 +287,15 @@ export function doesKeyvalueHasAnyKeys(value: any) {
 }
 
 /**
- * key in keyvalue
- * @param value 
- * @param key 
- * @returns 
+ * 类正整数判断
  */
-export function isKeyInKeyvalue(value: Keyvalue, key: string) {
-    return (isFunction(value.hasOwnProperty) && value.hasOwnProperty(key)) ||
-        (isKeyvalue(value) && key in value);
+export function lookLikePositiveInteger(value: any) {
+    return lookLikeInteger(value) && +value > 0
 }
 
-/**
- * null / undefined
- * @param value 
- * @returns 
- */
-export function isNullish(value: any): value is (null | undefined) {
-    return isNull(value) || isUndefined(value);
-}
 
-/**
- * 整数
- * @param value 
- * @returns 
- */
-export function isInteger(value: any) {
-    if (!isNumber(value)) return false;
-    return Number.isInteger(value)
-}
-
-/**
- * 类整数
- * @param value 
- * @returns 
- */
-export function isIntegerLike(value: any) {
-    if (!isNumberLike(value)) return false;
-    return Number.isInteger(+value)
-}
-
-/**
- * 浮点数
- * @param value 
- * @returns 
- */
-export function isFloat(value: any) {
-    if (!isNumber(value)) return false;
-    return `${Number(value)}`.indexOf('.') !== -1
+export function lookLikeNegativeInteger(value: any) {
+    return lookLikeInteger(value) && +value < 0
 }
 
 /**
@@ -280,47 +303,96 @@ export function isFloat(value: any) {
  * @param value 
  * @returns 
  */
-export function isFloatLike(value: any) {
-    if (!isNumberLike(value)) return false;
-    return `${Number(value)}`.indexOf('.') !== -1
+export function lookLikeFloat(value: any) {
+    if (!lookLikeNumber(value)) return false;
+    return isFloat(+value)
+}
+/**
+ * 类数字判断  
+ * '1' / 1
+ * @param value 
+ * @returns 
+ */
+export function lookLikeNumber(value: any) {
+
+    if (isNumber(value)) return true;
+    if (!isString(value)) return false;
+    if (value.trim() == '') return false;
+    return !isNaN(+value)
 }
 
 /**
- * 大于
- * @param first 
- * @param second 
+ * 类整数
+ * @param value 
  * @returns 
  */
-export function isGreaterThan(first: number, second: number) {
-    return +first > +second
+export function lookLikeInteger(value: any) {
+    if (!lookLikeNumber(value)) return false;
+    return isInteger(+value)
+}
+
+/**
+ * 类整数
+ * @param value 
+ * @returns 
+ */
+export function lookLikePositiveFloat(value: any) {
+    return lookLikeFloat(value) && +value > 0
+}
+/**
+ * 类整数
+ * @param value 
+ * @returns 
+ */
+export function lookLikeNegativeFloat(value: any) {
+    return lookLikeFloat(value) && +value < 0
 }
 
 /**
  * 大于等于
- * @param first 
- * @param second 
+ * 可用字符串
+ * 不是可匹配数字默认返回false
+ * @param value 
+ * @param value2 
  * @returns 
  */
-export function isGEThan(first: number, second: number) {
-    return +first >= +second;
+export function lookLikeGreaterAndEqualThan(value: any, value2: any) {
+    return lookLikeNumber(value) && lookLikeNumber(value2) && +value >= +value2
 }
 
 /**
- * 小于
- * @param first 
- * @param second 
+ * 大于
+ * 可用字符串
+ * 不是可匹配数字默认返回false
+ * @param value 
+ * @param value2 
  * @returns 
  */
-export function isLessThan(first: number, second: number) {
-    return +first < +second;
+export function lookLikeGreaterThan(value: any, value2: any) {
+    // return likeGEThan(value, value2) && (+value2 != +value)
+    return lookLikeNumber(value) && lookLikeNumber(value2) && +value > +value2
 }
 
 /**
  * 小于等于
- * @param first 
- * @param second 
+ * 可用字符串
+ * 不是可匹配数字默认返回false
+ * @param value 
+ * @param value2 
+ */
+export function lookLikeLessAndEqualThan(value: any, value2: any) {
+    // return likeGThan(value, value2)
+    return lookLikeNumber(value) && lookLikeNumber(value2) && +value <= +value2
+}
+/**
+ * 小于
+ * 可用字符串
+ * 不是可匹配数字默认返回false
+ * @param value 
+ * @param value2 
  * @returns 
  */
-export function isLEThan(first: number, second: number) {
-    return +first <= +second;
+export function lookLikeLessThan(value: any, value2: any) {
+    // return likeGEThan(value, value2)
+    return lookLikeNumber(value) && lookLikeNumber(value2) && +value < +value2
 }
